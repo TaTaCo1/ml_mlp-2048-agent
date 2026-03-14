@@ -100,10 +100,17 @@ def train(episodes=1000, max_steps=2000, save_freq=100, resume=False,
             
             # Reward shaping
             if np.array_equal(state, next_state):
-                reward -= 10
-            elif reward == 0:
-                reward += 1
-            
+                reward -= 10  # invalid move penalty
+            else:
+                # reward based on score gain, not just +1
+                reward = reward * 0.1 + 1  # scale the actual merge score
+                # bonus for reaching higher tiles
+
+            current_max = np.max(np.argmax(next_state.reshape(4,4,16), axis=2))
+            prev_max = np.max(np.argmax(state.reshape(4,4,16), axis=2))
+            if current_max > prev_max:
+                reward += 100  # big bonus when agent reaches a new highest tile!
+
             loss = agent.step(state, action, reward, next_state, done)
             total_loss += loss
             total_reward += reward
