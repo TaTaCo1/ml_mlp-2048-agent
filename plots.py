@@ -25,7 +25,6 @@ def plot_metrics(metrics_file="training_metrics.json", save_path="training_plots
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     fig.suptitle('2048 DQN Training Metrics', fontsize=16)
 
-    # 1. Scores
     axs[0, 0].plot(x, metrics['scores'], alpha=0.3, color='blue', label='Score')
     window = min(episodes // 10, 50) if episodes > 10 else 0
     if window > 0 and episodes > window:

@@ -11,13 +11,11 @@ obs, info = env.reset()
 terminated = False
 truncated = False
 
-
 while not (terminated or truncated):
     renderer.render(obs,info["total_score"])
     action = env.action_space.sample() # joga aleatoriamente ate perder
     obs, reward, terminated, truncated, info = env.step(action)
     time.sleep(0.3)
-
 
 print(info["total_score"])
 env.close()
