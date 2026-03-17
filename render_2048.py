@@ -147,39 +147,38 @@ class Game2048TripleRenderer:
         self.fonts = (self.font, self.score_font, self.move_font, self.label_font)
 
     def render(self,
-               obs_left,   score_left,   action_left,   label_left,
-               obs_middle, score_middle, action_middle, label_middle,
-               obs_right,  score_right,  action_right,  label_right):
+           obs_left,   score_left,   action_left,   label_left,
+           obs_middle, score_middle, action_middle, label_middle,
+           obs_right,  score_right,  action_right,  label_right):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pass  # FIX: do nothing when X is clicked — window stays open
 
         self.screen.fill((250, 248, 239))
 
-
-        # right board — Random
-        draw_board(self.screen, decode_board(obs_right),
-                   score_right, action_right,
-                   offset_x=(self.board_size + self.GAP) * 2, offset_y=0,
-                   size=self.size, tile_size=self.tile_size,
-                   header_size=self.header_size,
-                   fonts=self.fonts, label=label_right)
-        
-        # left board — DQN
+        # left board — Random
         draw_board(self.screen, decode_board(obs_left),
-                   score_left, action_left,
-                   offset_x=0, offset_y=0,
-                   size=self.size, tile_size=self.tile_size,
-                   header_size=self.header_size,
-                   fonts=self.fonts, label=label_left)
+                score_left, action_left,
+                offset_x=0, offset_y=0,
+                size=self.size, tile_size=self.tile_size,
+                header_size=self.header_size,
+                fonts=self.fonts, label=label_left)
 
-        # middle board — DQN+MCTS
+        # middle board — DQN
         draw_board(self.screen, decode_board(obs_middle),
-                   score_middle, action_middle,
-                   offset_x=self.board_size + self.GAP, offset_y=0,
-                   size=self.size, tile_size=self.tile_size,
-                   header_size=self.header_size,
-                   fonts=self.fonts, label=label_middle)
+                score_middle, action_middle,
+                offset_x=self.board_size + self.GAP, offset_y=0,
+                size=self.size, tile_size=self.tile_size,
+                header_size=self.header_size,
+                fonts=self.fonts, label=label_middle)
+
+        # right board — DQN+MCTS
+        draw_board(self.screen, decode_board(obs_right),
+                score_right, action_right,
+                offset_x=(self.board_size + self.GAP) * 2, offset_y=0,
+                size=self.size, tile_size=self.tile_size,
+                header_size=self.header_size,
+                fonts=self.fonts, label=label_right)
 
         pygame.display.flip()

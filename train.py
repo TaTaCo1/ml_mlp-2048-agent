@@ -115,7 +115,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
 
     print(f"{'Episode':<10} {'Score':<12} {'Max Tile':<12} {'Reward':<12} {'Loss':<12} {'Epsilon':<10} {'Steps':<8}")
     print("-" * 80)
-
+    best_avg_tile = 0.0
     for episode in range(start_episode, total_episodes + 1):
         obs, info = env.reset()
         state = agent.preprocess_state(obs)
@@ -212,7 +212,6 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
             print(f"    - Max Tile: {np.max(recent_tiles)}")
             print()
 
-        best_avg_tile = 0.0
         if len(metrics['max_tiles']) >= 100:
             recent_avg = np.mean(metrics['max_tiles'][-100:])
             if recent_avg > best_avg_tile:

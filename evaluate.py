@@ -55,7 +55,34 @@ def _print_results(scores, max_tiles, episode_times, label):
     print("="*70 + "\n")
     return np.mean(scores), np.mean(max_tiles)
 
+def _save_distribution(scores, max_tiles, episode_times, label, filename):
+    """Save evaluation metrics and tile distribution to JSON."""
+    unique_tiles, counts = np.unique(max_tiles, return_counts=True)
+    
+    tile_distribution = {}
+    for tile, count in zip(unique_tiles, counts):
+        pct = (count / len(scores)) * 100
+        tile_distribution[str(int(tile))] = {
+            'count': int(count),
+            'pct': round(float(pct), 2)
+        }
 
+    data = {
+        'agent': label,
+        'episodes': len(scores),
+        'avg_score': round(float(np.mean(scores)), 2),
+        'std_score': round(float(np.std(scores)), 2),
+        'max_score': int(np.max(scores)),
+        'min_score': int(np.min(scores)),
+        'avg_max_tile': round(float(np.mean(max_tiles)), 2),
+        'avg_episode_time': round(float(np.mean(episode_times)), 4),
+        'tile_distribution': tile_distribution
+    }
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=2)
+
+    print(f"✓ Saved distribution to {filename}")
 # ─────────────────────────────────────────
 # 1 — DQN only
 # ─────────────────────────────────────────
@@ -112,6 +139,7 @@ def evaluate_dqn(episodes, model_path, top_n=3):
     env.close()
     avg_score, avg_tile = _print_results(scores, max_tiles, episode_times, "DQN")
     _save_top_games(all_episodes, top_n, "top_games_dqn.json")
+    _save_distribution(scores, max_tiles, episode_times, "DQN", "distribution_dqn.json")
     return avg_score, avg_tile
 
 
@@ -176,6 +204,7 @@ def evaluate_dqn_mcts(episodes, model_path, top_n=3):
     env.close()
     avg_score, avg_tile = _print_results(scores, max_tiles, episode_times, "DQN trained with MCTS")
     _save_top_games(all_episodes, top_n, "top_games_mcts.json")
+    _save_distribution(scores, max_tiles, episode_times, "DQN+MCTS", "distribution_mcts.json")
     return avg_score, avg_tile
 
 
@@ -222,6 +251,7 @@ def evaluate_random(episodes, top_n=3):
     env.close()
     avg_score, avg_tile = _print_results(scores, max_tiles, episode_times, "RANDOM")
     _save_top_games(all_episodes, top_n, "top_games_random.json")
+    _save_distribution(scores, max_tiles, episode_times, "Random", "distribution_random.json")
     return avg_score, avg_tile
 
 
