@@ -26,7 +26,7 @@ class ReplayBuffer:
 
 class DQNAgent:
     def __init__(self, action_dim=4, lr=1e-4, gamma=0.99,
-                 epsilon_start=1.0, epsilon_end=0.02, epsilon_decay = 0.9999,
+                 epsilon_start=1.0, epsilon_end=0.02, epsilon_decay = 0.9995,
                  tau=0.01, batch_size=128, buffer_size=100000,
                  device=None, network='cnn'):
 
