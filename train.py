@@ -37,7 +37,18 @@ def _monotonicity_bonus(board):
 
 
 def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
-          use_mcts=False, mcts_sims=20, mcts_depth=30):  # FIX 2: added mcts params
+          use_mcts=False, mcts_sims=20, mcts_depth=30):
+
+    # FIX 1: define all paths based on use_mcts at the top
+    # so every save uses the correct path consistently
+    if use_mcts:
+        model_latest  = "dqn_mcts_latest.pth"
+        model_best    = "dqn_mcts_best.pth"
+        metrics_file  = "training_metrics_mcts.json"
+    else:
+        model_latest  = "dqn_latest.pth"
+        model_best    = "dqn_best.pth"
+        metrics_file  = "training_metrics_dqn.json"
 
     print("\n" + "="*70)
     print("TRAINING CONFIGURATION")
@@ -50,6 +61,9 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
     if use_mcts:
         print(f"  - Simulations: {mcts_sims}")
         print(f"  - Max Depth: {mcts_depth}")
+    print(f"Model latest: {model_latest}")
+    print(f"Model best:   {model_best}")
+    print(f"Metrics file: {metrics_file}")
     print("="*70 + "\n")
 
     env = gym.make("gymnasium_2048/TwentyFortyEight-v0", size=4)
@@ -57,7 +71,6 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     agent = DQNAgent(device=device, action_dim=env.action_space.n, network='cnn')
 
-    # FIX 3: mcts_agent creation was completely missing
     if use_mcts:
         mcts_kwargs = {
             'num_simulations': mcts_sims,
@@ -79,19 +92,18 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
 
     if resume:
         try:
-            agent.load("dqn_2048_latest.pth")
-            print(f"✓ Loaded previous model weights")
+            agent.load(model_latest)
+            print(f"✓ Loaded previous model weights from {model_latest}")
             if agent.epsilon < 0.02:
                 agent.epsilon = 0.02
                 print(f"✓ Reset epsilon to 0.02")
         except Exception as e:
             print(f"✗ Could not load previous model: {e}")
-
         try:
-            if os.path.exists("training_metrics.json"):
-                with open("training_metrics.json", "r") as f:
+            if os.path.exists(metrics_file):
+                with open(metrics_file, "r") as f:
                     metrics = json.load(f)
-                print(f"✓ Loaded previous metrics ({len(metrics['scores'])} episodes)")
+                print(f"✓ Loaded previous metrics from {metrics_file} ({len(metrics['scores'])} episodes)")
         except Exception as e:
             print(f"✗ Could not load previous metrics: {e}")
 
@@ -121,7 +133,6 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
                 terminated = True
                 break
 
-            # FIX 4: use mcts_agent when use_mcts is True
             if use_mcts:
                 mcts_agent.env = env
                 action = mcts_agent.select_action(state, use_mcts=True)
@@ -188,10 +199,10 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
         print(f"{episode:<10} {score:<12.0f} {max_tile:<12} {total_reward:<12.2f} {avg_loss:<12.6f} {agent.epsilon:<10.4f} {steps:<8}")
 
         if episode % save_freq == 0:
-            agent.save("dqn_2048_latest.pth")
-            with open("training_metrics.json", "w") as f:
+            agent.save(model_latest)
+            with open(metrics_file, "w") as f:
                 json.dump(metrics, f, indent=2)
-            print(f"\n✓ Saved checkpoint at episode {episode}")
+            print(f"\n✓ Saved checkpoint at episode {episode} → {model_latest}")
 
             recent_scores = metrics['scores'][-save_freq:]
             recent_tiles = metrics['max_tiles'][-save_freq:]
@@ -201,18 +212,16 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
             print(f"    - Max Tile: {np.max(recent_tiles)}")
             print()
 
-        # best model save
+        best_avg_tile = 0.0
         if len(metrics['max_tiles']) >= 100:
             recent_avg = np.mean(metrics['max_tiles'][-100:])
-            if not hasattr(agent, 'best_avg_tile'):
-                agent.best_avg_tile = 0
-            if recent_avg > agent.best_avg_tile:
-                agent.best_avg_tile = recent_avg
-                agent.save("dqn_2048_best.pth")
-                print(f"  ★ New best avg tile: {recent_avg:.1f} → saved dqn_2048_best.pth")
+            if recent_avg > best_avg_tile:
+                best_avg_tile = recent_avg
+                agent.save(model_best)
+                print(f"  ★ New best avg tile: {recent_avg:.1f} → saved {model_best}")
 
-    agent.save("dqn_2048_latest.pth")
-    with open("training_metrics.json", "w") as f:
+    agent.save(model_latest)
+    with open(metrics_file, "w") as f:
         json.dump(metrics, f, indent=2)
 
     print("\n" + "="*70)
@@ -223,6 +232,8 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
     print(f"Average last 100 scores: {np.mean(metrics['scores'][-100:]):.0f}")
     print(f"Best score achieved: {np.max(metrics['scores']):.0f}")
     print(f"Highest tile reached: {np.max(metrics['max_tiles'])}")
+    print(f"Models saved: {model_latest}, {model_best}")
+    print(f"Metrics saved: {metrics_file}")
     print("="*70 + "\n")
 
     env.close()
