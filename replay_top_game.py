@@ -13,24 +13,60 @@ def replay():
 
     renderer = Game2048Renderer(size=4)
 
-    print(f"\nFound {len(top_games)} saved games\n")
+    num_games = min(len(dqn_games), len(mcts_games), len(random_games))
 
-    for game in top_games:
-        print(f"Game {game['rank']} | Score: {game['score']} | Max Tile: {game['max_tile']} | Steps: {game['steps']}")
+    for i in range(num_games):
+        dqn_game    = dqn_games[i]
+        mcts_game   = mcts_games[i]
+        random_game = random_games[i]
+
+        # FIX 1: duplicate print removed
+        print(f"Game {i+1}/{num_games}")
+        print(f"  Random:   Score={random_game['score']} Max Tile={random_game['max_tile']}")
+        print(f"  DQN:      Score={dqn_game['score']}    Max Tile={dqn_game['max_tile']}")
+        print(f"  MCTS:     Score={mcts_game['score']}   Max Tile={mcts_game['max_tile']}")
         print("Press Ctrl+C to skip\n")
 
+        dqn_frames    = dqn_game['frames']
+        mcts_frames   = mcts_game['frames']
+        random_frames = random_game['frames']
+
+        max_len = max(len(dqn_frames), len(mcts_frames), len(random_frames))
+
         try:
-            for frame_data in game['frames']:
-                obs_list, score_frame, last_action = frame_data
-                obs_frame = np.array(obs_list)
-                renderer.render(obs_frame, score_frame, last_action=last_action)
-                time.sleep(0.3)
+            for fi in range(max_len):
+                dqn_f    = dqn_frames[min(fi, len(dqn_frames) - 1)]
+                mcts_f   = mcts_frames[min(fi, len(mcts_frames) - 1)]
+                random_f = random_frames[min(fi, len(random_frames) - 1)]
+
+                obs_dqn,    score_dqn,    action_dqn    = dqn_f
+                obs_mcts,   score_mcts,   action_mcts   = mcts_f
+                obs_random, score_random, action_random = random_f
+
+                renderer.render(
+                    np.array(obs_random), score_random, action_random, "Random",
+                    np.array(obs_dqn),    score_dqn,    action_dqn,    "DQN",
+                    np.array(obs_mcts),   score_mcts,   action_mcts,   "DQN+MCTS"
+                )
+                time.sleep(delay)
+
         except KeyboardInterrupt:
             print("Skipped!\n")
             continue
 
-        print(f"Game {game['rank']} finished!\n")
-        time.sleep(1)
+        print(f"Game {i+1} finished!\n")
+        time.sleep(1)  # FIX 2: pause between games was missing
+
+    # FIX 3: keep window open after all games finish
+    # wait until user closes the window manually
+    print("All games finished! Close the window to exit.")
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+    pygame.quit()
+
 
 if __name__ == "__main__":
     replay()

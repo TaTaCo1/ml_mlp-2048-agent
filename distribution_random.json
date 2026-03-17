@@ -1,32 +1,20 @@
 {
   "agent": "Random",
-  "episodes": 100,
-  "avg_score": 1068.04,
-  "std_score": 534.47,
-  "max_score": 3052,
-  "min_score": 160,
-  "avg_max_tile": 103.2,
-  "avg_episode_time": 0.0081,
+  "episodes": 10,
+  "avg_score": 891.6,
+  "std_score": 281.92,
+  "max_score": 1348,
+  "min_score": 580,
+  "avg_max_tile": 96.0,
+  "avg_episode_time": 0.0083,
   "tile_distribution": {
-    "16": {
-      "count": 1,
-      "pct": 1.0
-    },
-    "32": {
-      "count": 6,
-      "pct": 6.0
-    },
     "64": {
-      "count": 38,
-      "pct": 38.0
-    },
-    "128": {
-      "count": 50,
+      "count": 5,
       "pct": 50.0
     },
-    "256": {
+    "128": {
       "count": 5,
-      "pct": 5.0
+      "pct": 50.0
     }
   }
 }
