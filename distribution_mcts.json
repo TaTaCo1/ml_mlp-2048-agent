@@ -1,0 +1,28 @@
+{
+  "agent": "DQN+MCTS",
+  "episodes": 100,
+  "avg_score": 2668.32,
+  "std_score": 1274.73,
+  "max_score": 6224,
+  "min_score": 744,
+  "avg_max_tile": 215.68,
+  "avg_episode_time": 0.3931,
+  "tile_distribution": {
+    "64": {
+      "count": 9,
+      "pct": 9.0
+    },
+    "128": {
+      "count": 34,
+      "pct": 34.0
+    },
+    "256": {
+      "count": 49,
+      "pct": 49.0
+    },
+    "512": {
+      "count": 8,
+      "pct": 8.0
+    }
+  }
+}

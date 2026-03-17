@@ -1,0 +1,32 @@
+{
+  "agent": "DQN",
+  "episodes": 100,
+  "avg_score": 2390.6,
+  "std_score": 1333.89,
+  "max_score": 6728,
+  "min_score": 452,
+  "avg_max_tile": 192.96,
+  "avg_episode_time": 0.3634,
+  "tile_distribution": {
+    "32": {
+      "count": 1,
+      "pct": 1.0
+    },
+    "64": {
+      "count": 7,
+      "pct": 7.0
+    },
+    "128": {
+      "count": 51,
+      "pct": 51.0
+    },
+    "256": {
+      "count": 34,
+      "pct": 34.0
+    },
+    "512": {
+      "count": 7,
+      "pct": 7.0
+    }
+  }
+}

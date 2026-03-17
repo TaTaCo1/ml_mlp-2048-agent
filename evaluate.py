@@ -27,7 +27,7 @@ def evaluate(episodes, model_path, render=False, verbose=False, top_n=3):  # def
         agent.load(model_path)
         print(f"✓ Loaded model from {model_path}\n")
     except Exception as e:
-        print(f"✗ Could not load model: {e}")
+        print(f"Could not load model: {e}")
         return
 
     scores = []

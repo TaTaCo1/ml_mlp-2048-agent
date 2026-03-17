@@ -73,8 +73,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
         'rewards': [],
         'max_tiles': [],
         'losses': [],
-        'scores': [],
-        'epsilon': []
+        'scores': []
     }
 
     if resume:
@@ -91,7 +90,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
             if os.path.exists("training_metrics.json"):
                 with open("training_metrics.json", "r") as f:
                     metrics = json.load(f)
-                print(f"✓ Loaded previous metrics ({len(metrics['scores'])} episodes)")
+                print(f"Loaded previous metrics with {len(metrics['scores'])} episodes.")
         except Exception as e:
             print(f"✗ Could not load previous metrics: {e}")
 
@@ -135,6 +134,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
                     break
 
             next_obs, reward, terminated, truncated, info = env.step(action)
+            
             next_state = agent.preprocess_state(next_obs)
             done = terminated or truncated
 
@@ -173,7 +173,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
         agent.decay_epsilon()
 
         powers = np.argmax(next_obs, axis=2)
-        highest_power = int(np.max(powers))
+        highest_power = np.max(powers)
         max_tile = 2 ** highest_power if highest_power > 0 else 0
 
         avg_loss = total_loss / steps if steps > 0 else 0
@@ -188,7 +188,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
         print(f"{episode:<10} {score:<12.0f} {max_tile:<12} {total_reward:<12.2f} {avg_loss:<12.6f} {agent.epsilon:<10.4f} {steps:<8}")
 
         if episode % save_freq == 0:
-            agent.save("dqn_2048_latest.pth")
+            agent.save(f"dqn_2048_latest.pth")
             with open("training_metrics.json", "w") as f:
                 json.dump(metrics, f, indent=2)
             print(f"\n✓ Saved checkpoint at episode {episode}")
@@ -226,10 +226,11 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
     print("="*70 + "\n")
 
     env.close()
+    print("Training complete!")
 
-
-def main():
-    parser = argparse.ArgumentParser(description="Train DQN agent on 2048")
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
     parser.add_argument("--episodes", type=int, default=1000)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--network", type=str, default='cnn',
