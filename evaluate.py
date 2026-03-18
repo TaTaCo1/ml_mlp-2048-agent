@@ -292,7 +292,7 @@ if __name__ == "__main__":
     parser.add_argument("--episodes", type=int, default=100)
     parser.add_argument("--model", type=str, default="dqn_2048_best.pth",
                     help="Path to DQN only model")
-    parser.add_argument("--model-mcts", type=str, default="dqn_2048_mcts_best.pth",
+    parser.add_argument("--model-mcts", type=str, default="dqn_2048_mcts_latest.pth",
                         help="Path to DQN+MCTS model")
     parser.add_argument("--top-n", type=int, default=1)
     parser.add_argument("--mcts-sims", type=int, default=30)

@@ -69,7 +69,7 @@ def train(episodes=1000, max_steps=2000, save_freq=128, resume=False,
     env = gym.make("gymnasium_2048/TwentyFortyEight-v0", size=4)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    agent = DQNAgent(device=device, action_dim=env.action_space.n, network='cnn')
+    agent = DQNAgent(device=device, action_dim=env.action_space.n, network='cnn') 
 
     if use_mcts:
         mcts_kwargs = {
