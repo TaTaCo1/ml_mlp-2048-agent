@@ -1,30 +1,17 @@
 import json
 import time
 import numpy as np
-import pygame
-from render_2048 import Game2048TripleRenderer
+from render_2048 import Game2048Renderer
 
-
-def load_games(filename):
+def replay():
     try:
-        with open(filename, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"✗ File not found: {filename}")
-        return None
-
-
-def replay_all_side_by_side(delay=0.15):
-    """Replay all 3 agents side by side in one window."""
-    dqn_games    = load_games("top_games_dqn.json")
-    mcts_games   = load_games("top_games_mcts.json")
-    random_games = load_games("top_games_random.json")
-
-    if not dqn_games or not mcts_games or not random_games:
-        print("Missing files! Run evaluate.py --mode all first.")
+        with open("top_games.json", "r") as f:
+            top_games = json.load(f)
+    except:
+        print("No top_games.json found! Run evaluate.py first.")
         return
 
-    renderer = Game2048TripleRenderer(size=4, tile_size=100)
+    renderer = Game2048Renderer(size=4)
 
     num_games = min(len(dqn_games), len(mcts_games), len(random_games))
 
@@ -82,10 +69,4 @@ def replay_all_side_by_side(delay=0.15):
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Replay top games side by side")
-    parser.add_argument("--delay", type=float, default=0.15,
-                        help="Seconds between frames (default: 0.15)")
-    args = parser.parse_args()
-
-    replay_all_side_by_side(args.delay)
+    replay()
