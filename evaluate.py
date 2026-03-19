@@ -331,16 +331,26 @@ def compare_all(episodes, model_path, model_mcts_path, top_n=1):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate DQN agent on 2048")
     parser.add_argument("--episodes", type=int, default=100)
-    parser.add_argument("--model", type=str, default="dqn_2048_best.pth")
-    parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--model", type=str, default="dqn_2048_best.pth",
+                        help="Path to DQN only model")
+    parser.add_argument("--model-mcts", type=str, default="dqn_2048_mcts_latest.pth",
+                        help="Path to DQN+MCTS model")
+    parser.add_argument("--verbose", action="store_true", help="Print verbose output")
     parser.add_argument("--top-n", type=int, default=5,
                         help="Number of top games to replay (default: 5)")
+    parser.add_argument("--mcts-sims", type=int, default=30)
+    parser.add_argument("--mcts-depth", type=int, default=15)
+    parser.add_argument("--mode", type=str, default="all",
+                        choices=["all", "dqn", "mcts", "random"],
+                        help="Which agent to evaluate")
 
     args = parser.parse_args()
 
-    evaluate(
-        args.episodes,
-        args.model,
-        verbose=args.verbose,
-        top_n=args.top_n
-    )
+    if args.mode == "all":
+        compare_all(args.episodes, args.model, args.model_mcts, args.top_n)
+    elif args.mode == "dqn":
+        evaluate_dqn(args.episodes, args.model, args.top_n)
+    elif args.mode == "mcts":
+        evaluate_dqn_mcts(args.episodes, args.model_mcts, args.top_n)
+    elif args.mode == "random":
+        evaluate_random(args.episodes, args.top_n)

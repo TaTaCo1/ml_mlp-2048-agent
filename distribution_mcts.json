@@ -1,28 +1,36 @@
 {
   "agent": "DQN+MCTS",
-  "episodes": 10,
-  "avg_score": 2318.8,
-  "std_score": 1378.18,
-  "max_score": 4068,
-  "min_score": 436,
-  "avg_max_tile": 169.6,
-  "avg_episode_time": 0.3562,
+  "episodes": 1000,
+  "avg_score": 2477.53,
+  "std_score": 1315.42,
+  "max_score": 10144,
+  "min_score": 316,
+  "avg_max_tile": 204.35,
+  "avg_episode_time": 0.3577,
   "tile_distribution": {
     "32": {
-      "count": 1,
-      "pct": 10.0
+      "count": 6,
+      "pct": 0.6
     },
     "64": {
-      "count": 2,
-      "pct": 20.0
+      "count": 106,
+      "pct": 10.6
     },
     "128": {
-      "count": 2,
-      "pct": 20.0
+      "count": 372,
+      "pct": 37.2
     },
     "256": {
-      "count": 5,
-      "pct": 50.0
+      "count": 449,
+      "pct": 44.9
+    },
+    "512": {
+      "count": 66,
+      "pct": 6.6
+    },
+    "1024": {
+      "count": 1,
+      "pct": 0.1
     }
   }
 }
